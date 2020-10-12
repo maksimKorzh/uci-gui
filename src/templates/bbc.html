@@ -20,8 +20,6 @@
     <link rel="stylesheet" href="/static/css/chessboard-1.0.0.min.css">
     <script src="/static/js/chessboard-1.0.0.min.js"></script>
     
-    <!-- Patreon -->
-    <script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
   </head>
   <body>
     <div class="col">
@@ -90,10 +88,10 @@
                     
                   </div>
                 </div>
-                <div class="col">
+                <div class="col ml-4">
                   <!-- links -->
                   <div class="input-group mt-2 mb-3">
-                    <a href="" class="btn btn-primary mx-auto ml-2">Download BBC engine</a>
+                    <a href="https://github.com/maksimKorzh/bbc" class="btn btn-primary mx-auto ml-2">Download BBC engine</a>
                     <a href="mailto:freesoft.for.people@gmail.com" class="text-dark nav-link mx-auto"><strong class="ml-2 mt-1">freesoft.for.people@gmail.com</strong></a>
                     <a href="https://www.patreon.com/bePatron?u=29097253" class="btn btn-warning mx-auto">Become a Patron!</a>
                   </div>
@@ -372,6 +370,11 @@
   
   // create chess board widget instance
   board = Chessboard('chess_board', config)
+  
+  // prevent scrolling on touch devices
+  $('#chess_board').on('scroll touchmove touchend touchstart contextmenu', function(e) {
+    e.preventDefault();
+  });
 
   // update game status
   updateStatus();
