@@ -142,6 +142,9 @@
 <script>
   // make computer move
   function make_move() {
+    // disable take back button
+    $('#take_back').attr('disabled', true);
+    
     // make HTTP POST request to make move API
     $.post('/make_move',{
         'fen': game.fen(),
@@ -163,6 +166,9 @@
 
         // update game status
         updateStatus();
+        
+        // re-enable take back button
+        $('#take_back').attr('disabled', false);
     });
   }
 
