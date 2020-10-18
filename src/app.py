@@ -21,7 +21,7 @@ def root():
 @app.route('/make_move', methods=['POST'])
 def make_move():
     # create chess engine instance
-    engine = chess.engine.SimpleEngine.popen_uci('./engine/bbc_1.2')
+    engine = chess.engine.SimpleEngine.popen_uci('./engine/bbc_1.3')
    
     # extract FEN string from HTTP POST request body
     fen = request.form.get('fen')
@@ -48,7 +48,7 @@ def make_move():
     if fixed_depth != '0':
         # search for best move instantly
         info = engine.analyse(board, chess.engine.Limit(depth=int(fixed_depth)))
-
+    
     # extract best move from PV
     best_move = info['pv'][0]
 
