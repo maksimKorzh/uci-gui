@@ -38,41 +38,69 @@ def make_move():
     # if move time is available
     if move_time != '0':
         if move_time == 'instant':
-            # search for best move instantly
-            info = engine.analyse(board, chess.engine.Limit(time=0.1))
+            try:
+                # search for best move instantly
+                info = engine.analyse(board, chess.engine.Limit(time=0.1))
+            except:
+                print('ERROR INSTANT!')
+                info = {}
         else:
-            # search for best move with fixed move time
-            info = engine.analyse(board, chess.engine.Limit(time=int(move_time)))
+            try:
+                # search for best move with fixed move time
+                info = engine.analyse(board, chess.engine.Limit(time=int(move_time)))
+            except:
+                info = {}
 
     # if fixed depth is available
     if fixed_depth != '0':
-        # search for best move instantly
-        info = engine.analyse(board, chess.engine.Limit(depth=int(fixed_depth)))
+        try:
+            # search for best move instantly
+            info = engine.analyse(board, chess.engine.Limit(depth=int(fixed_depth)))
+        except:
+            info = {}
     
-    # extract best move from PV
-    best_move = info['pv'][0]
+    try:
+        # extract best move from PV
+        best_move = info['pv'][0]
 
-    # update internal python chess board state
-    board.push(best_move)
+        # update internal python chess board state
+        board.push(best_move)
+        
+        # extract FEN from current board state
+        fen = board.fen()
+        
+        # terminate engine process
+        engine.quit()
+        
+        # get best score
+        try:
+            score = -int(str(info['score'])) / 100
+        
+        except:
+            score = str(info['score'])
+            
+            # inverse score
+            if '+' in score:
+                score = score.replace('+', '-')
+            
+            elif '-' in score:
+                score = score.replace('-', '+')
+            
+        return {
+            'fen': fen,
+            'best_move': str(best_move),
+            'score': score,
+            'depth': info['depth'],
+            'pv': ' '.join([str(move) for move in info['pv']]),
+            'nodes': info['nodes'],
+            'time': info['time']
+        }
     
-    # extract FEN from current board state
-    fen = board.fen()
-    
-    # terminate engine process
-    engine.quit()
-    
-    # get best score
-    score = int(str(info['score'])) / 100
-
-    return {
-        'fen': fen,
-        'best_move': str(best_move),
-        'score': -score,
-        'depth': info['depth'],
-        'pv': ' '.join([str(move) for move in info['pv']]),
-        'nodes': info['nodes'],
-        'time': info['time']
-    }
+    except:
+        return {
+            'fen': board.fen(),
+            'score': '#+1'
+        }
 
 # main driver
 if __name__ == '__main__':
