@@ -60,11 +60,14 @@ def make_move():
     
     # terminate engine process
     engine.quit()
+    
+    # get best score
+    score = int(str(info['score'])) / 100
 
     return {
         'fen': fen,
         'best_move': str(best_move),
-        'score': int(str(info['score'])) / 100,
+        'score': -score,
         'depth': info['depth'],
         'pv': ' '.join([str(move) for move in info['pv']]),
         'nodes': info['nodes'],
