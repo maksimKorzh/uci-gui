@@ -64,7 +64,7 @@ def make_move():
     return {
         'fen': fen,
         'best_move': str(best_move),
-        'score': str(info['score']),
+        'score': int(str(info['score'])) / 100,
         'depth': info['depth'],
         'pv': ' '.join([str(move) for move in info['pv']]),
         'nodes': info['nodes'],
