@@ -8,6 +8,11 @@ from flask import render_template
 from flask import request
 import chess
 import chess.engine
+import chess.pgn
+import io
+
+# create chess engine instance
+engine = chess.engine.SimpleEngine.popen_uci('./engine/bbc_1.3')
 
 # create web app instance
 app = Flask(__name__)
@@ -20,20 +25,27 @@ def root():
 # make move API
 @app.route('/make_move', methods=['POST'])
 def make_move():
-    # create chess engine instance
-    engine = chess.engine.SimpleEngine.popen_uci('./engine/bbc_1.3')
+    
    
     # extract FEN string from HTTP POST request body
-    fen = request.form.get('fen')
-
+    pgn = io.StringIO(request.form.get('pgn'))
+    
+    # read game moves from PGN
+    game = chess.pgn.read_game(pgn)    
+    
+    # init board
+    board = game.board()
+    
+    # loop over moves in game
+    for move in game.mainline_moves():
+        # make move on chess board
+        board.push(move)
+    
     # extract fixed depth value
     fixed_depth = request.form.get('fixed_depth')
 
     # extract move time value
     move_time = request.form.get('move_time')
-
-    # init python chess board instance
-    board = chess.Board(fen)
     
     # if move time is available
     if move_time != '0':
@@ -42,7 +54,6 @@ def make_move():
                 # search for best move instantly
                 info = engine.analyse(board, chess.engine.Limit(time=0.1))
             except:
-                print('ERROR INSTANT!')
                 info = {}
         else:
             try:
@@ -66,11 +77,7 @@ def make_move():
         # update internal python chess board state
         board.push(best_move)
         
-        # extract FEN from current board state
-        fen = board.fen()
-        
-        # terminate engine process
-        engine.quit()
+       
         
         # get best score
         try:
@@ -85,9 +92,9 @@ def make_move():
             
             elif '-' in score:
                 score = score.replace('-', '+')
-            
+          
         return {
-            'fen': fen,
+            'fen': board.fen(),
             'best_move': str(best_move),
             'score': score,
             'depth': info['depth'],
@@ -106,3 +113,6 @@ def make_move():
 if __name__ == '__main__':
     # start HTTP server
     app.run(debug=True, threaded=True)
+    
+    # terminate engine process
+    engine.quit()
