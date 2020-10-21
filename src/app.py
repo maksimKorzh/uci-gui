@@ -11,9 +11,6 @@ import chess.engine
 import chess.pgn
 import io
 
-# create chess engine instance
-engine = chess.engine.SimpleEngine.popen_uci('./engine/bbc_1.3')
-
 # create web app instance
 app = Flask(__name__)
 
@@ -25,7 +22,8 @@ def root():
 # make move API
 @app.route('/make_move', methods=['POST'])
 def make_move():
-    
+    # create chess engine instance
+    engine = chess.engine.SimpleEngine.popen_uci('./engine/bbc_1.3')
    
     # extract FEN string from HTTP POST request body
     pgn = io.StringIO(request.form.get('pgn'))
@@ -70,6 +68,9 @@ def make_move():
         except:
             info = {}
     
+    # terminate engine process
+    engine.quit()
+    
     try:
         # extract best move from PV
         best_move = info['pv'][0]
@@ -113,6 +114,3 @@ def make_move():
 if __name__ == '__main__':
     # start HTTP server
     app.run(debug=True, threaded=True)
-    
-    # terminate engine process
-    engine.quit()
