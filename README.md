@@ -2,7 +2,7 @@
 A simple web based GUI to play versus my engine BBC. You can replace BBC with whatever UCI chess engine and get the same result!
 
 # PLAY ONLINE
-![](https://github.com/maksimKorzh/nibble-chess/blob/master/gui.png)
+[![IMAGE ALT TEXT HERE](https://github.com/maksimKorzh/uci-gui/blob/main/gui.png)](https://maksimkorzh.pythonanywhere.com)
 
 # Features
  - online play
