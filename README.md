@@ -5,7 +5,8 @@ A simple web based GUI to play versus my engine BBC. You can replace BBC with wh
 http://maksimkorzh.pythonanywhere.com/
 
 # Features
- - play online
+ - online play
+ - opening book in text format (from TSCP chess engine)
  - flip board
  - force computer move
  - fixed time mode
