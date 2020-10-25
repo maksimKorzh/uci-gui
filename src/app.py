@@ -10,9 +10,61 @@ import chess
 import chess.engine
 import chess.pgn
 import io
+import random
 
 # create web app instance
 app = Flask(__name__)
+
+# probe book move
+def probe_book(pgn):
+    # open book file
+    with open('./engine/book.txt') as f:
+        # read book games
+        book = f.read()
+
+        # init board        
+        board = chess.Board()
+        
+        # define response moves
+        response_moves = []
+
+        # loop over book lines
+        for line in book.split('\n')[0:-1]:
+            # define variation
+            variation = []
+            
+            # loop over line moves
+            for move in line.split():
+                variation.append(chess.Move.from_uci(move))
+            
+            # parse variation to SAN
+            san = board.variation_san(variation)
+            
+            # match book line line
+            if pgn in san:
+                try:
+                    # black move
+                    if san.split(pgn)[-1].split()[0][0].isdigit():
+                        response_moves.append(san.split(pgn)[-1].split()[1])
+                    
+                    # white move
+                    else:
+                        response_moves.append(san.split(pgn)[-1].split()[0])
+                
+                except:
+                    pass
+            
+            # engine makes first move
+            if pgn == '':
+                response_moves.append(san.split('1. ')[-1].split()[0])
+
+        # return random response move
+        if len(response_moves):
+            print('BOOK MOVE:', random.choice(response_moves))
+            return random.choice(response_moves)
+        
+        else:
+            return 0
 
 # root(index) route
 @app.route('/')
@@ -22,14 +74,18 @@ def root():
 # make move API
 @app.route('/make_move', methods=['POST'])
 def make_move():
-    # create chess engine instance
-    engine = chess.engine.SimpleEngine.popen_uci('./engine/bbc_1.3')
-   
     # extract FEN string from HTTP POST request body
-    pgn = io.StringIO(request.form.get('pgn'))
+    pgn = request.form.get('pgn')
     
+    # probe opening book
+    if probe_book(pgn):
+        return {
+            'score': 'book move',
+            'best_move': probe_book(pgn)
+        }
+
     # read game moves from PGN
-    game = chess.pgn.read_game(pgn)    
+    game = chess.pgn.read_game(io.StringIO(pgn))    
     
     # init board
     board = game.board()
@@ -38,6 +94,9 @@ def make_move():
     for move in game.mainline_moves():
         # make move on chess board
         board.push(move)
+    
+    # create chess engine instance
+    engine = chess.engine.SimpleEngine.popen_uci('./engine/bbc_1.4')
     
     # extract fixed depth value
     fixed_depth = request.form.get('fixed_depth')
