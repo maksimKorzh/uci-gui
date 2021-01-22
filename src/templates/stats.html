@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <!-- Favicon -->
+    <!--link rel="shortcut icon" href="{{url_for('static', filename='images/favicon.ico')}}"-->
+
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script type = "text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script type = "text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script type = "text/javascript"  src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Datatable -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script type = "text/javascript"  src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type = "text/javascript"  src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script type = "text/javascript"  src="https://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"></script>
+
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col">
+          <div class="card mt-4">
+            <div class="card-body">
+              
+              <table id="stats" class="display table nowrap responsive" style="width: 100%">
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Url:</th>
+                    <th>Date:</th>
+                    <th>Ip:</th>
+                    <th>Agent:</th>
+                    <th></th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="text/javascript">
+      $('#stats').DataTable({
+        'ajax': {
+            'url': '/analytics/api/get'
+         },
+
+        'order': [
+          [ 5, 'desc' ]
+        ],
+         
+        'columns': [
+          {
+            'data': () => {return ''},
+            'orderable': false
+          },
+          {'data': 'Url'},
+          {'data': 'Date'},
+          {'data': 'Ip'},
+          {'data': 'Agent'},
+          {'data': '_id'}
+        ],
+        
+        'columnDefs': [
+          {
+            targets: 1,
+            render: (data) => { return '<a target="_blank" href="' + data + '">' + data + '</a>'}
+          },
+          {
+            targets: 4,
+            render: (data) => { return '<div class="text-wrap">' + data + '</div>' }
+          },
+          {
+            targets: 5,
+            render: (data) => { return '<div hidden=true>' + data + '</div>' }
+          }
+        ]
+      });
+    </script>
+  </body>
+</html>
+
+
+
+

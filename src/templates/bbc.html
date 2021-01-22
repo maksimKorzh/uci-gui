@@ -20,6 +20,14 @@
     <link rel="stylesheet" href="/static/css/chessboard-1.0.0.min.css">
     <script src="/static/js/chessboard-1.0.0.min.js"></script>
     
+    <!-- Analytics -->
+    <script type="text/javascript">
+      $.post('https://https://maksimkorzh.pythonanywhere.com/analytics/api/post', {
+        date: new Date,
+        url: window.location.href
+      });
+    </script>
+    
   </head>
   <body>
     <div class="col">

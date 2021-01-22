@@ -11,9 +11,14 @@ import chess.engine
 import chess.pgn
 import io
 import random
+from flask import jsonify
+from flask_pymongo import PyMongo
+from datetime import datetime
 
 # create web app instance
 app = Flask(__name__)
+app.config["MONGO_URI"] = "mongodb+srv://analytics:342124@analytics-knicw.mongodb.net/stats?retryWrites=true&w=majority"
+mongo = PyMongo(app)
 
 # probe book move
 def probe_book(pgn):
@@ -168,6 +173,50 @@ def make_move():
             'fen': board.fen(),
             'score': '#+1'
         }
+
+@app.route('/analytics')
+def analytics():
+    return render_template('stats.html')
+
+@app.route('/analytics/api/post', methods=['POST'])
+def post():
+    response = Response('')
+    response.headers['Access-Control-Allow-Origin'] = '*'
+
+    stats = {
+        'Date': request.form.get('date'),
+        'Url': request.form.get('url'),
+        'Agent':request.headers.get('User-Agent')
+    }
+
+    if request.headers.getlist("X-Forwarded-For"):
+       stats['Ip'] = request.headers.getlist("X-Forwarded-For")[0]
+    else:
+       stats['Ip'] = request.remote_addr
+    
+    if request.headers.get('Origin'):
+        stats['Origin'] = request.headers.get('Origin')
+    else:
+        stats['Origin'] = 'N/A'
+    
+    if request.headers.get('Referer'):
+        stats['Referer'] = request.headers.get('Referer')
+    else:
+        stats['Referer'] = 'N/A'
+    
+    mongo.db.stats.insert_one(stats)
+    return response
+
+
+@app.route('/analytics/api/get')
+def get():
+    stats = []
+    
+    for stat in mongo.db.stats.find():
+        stat['_id'] = str(stat['_id'])
+        stats.append(stat)
+
+    return jsonify({'data': stats})
 
 # main driver
 if __name__ == '__main__':
