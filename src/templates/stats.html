@@ -54,7 +54,7 @@
          },
 
         'order': [
-          [ 5, 'desc' ]
+          [ 2, 'desc' ]
         ],
          
         'columns': [
@@ -65,8 +65,7 @@
           {'data': 'Url'},
           {'data': 'Date'},
           {'data': 'Ip'},
-          {'data': 'Agent'},
-          {'data': '_id'}
+          {'data': 'Agent'}
         ],
         
         'columnDefs': [
@@ -75,12 +74,8 @@
             render: (data) => { return '<a target="_blank" href="' + data + '">' + data + '</a>'}
           },
           {
-            targets: 4,
+            targets: 3,
             render: (data) => { return '<div class="text-wrap">' + data + '</div>' }
-          },
-          {
-            targets: 5,
-            render: (data) => { return '<div hidden=true>' + data + '</div>' }
           }
         ]
       });

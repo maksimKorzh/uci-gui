@@ -12,13 +12,13 @@ import chess.pgn
 import io
 import random
 from flask import jsonify
+from flask import Response
 from flask_pymongo import PyMongo
 from datetime import datetime
+import json
 
 # create web app instance
 app = Flask(__name__)
-app.config["MONGO_URI"] = "mongodb+srv://analytics:342124@analytics-knicw.mongodb.net/stats?retryWrites=true&w=majority"
-mongo = PyMongo(app)
 
 # probe book move
 def probe_book(pgn):
@@ -204,7 +204,7 @@ def post():
     else:
         stats['Referer'] = 'N/A'
     
-    mongo.db.stats.insert_one(stats)
+    with open('stats.json', 'a') as f: f.write(json.dumps(stats, indent=2) + '\n\n')
     return response
 
 
@@ -212,10 +212,11 @@ def post():
 def get():
     stats = []
     
-    for stat in mongo.db.stats.find():
-        stat['_id'] = str(stat['_id'])
-        stats.append(stat)
-
+    with open('stats.json') as f:
+        for entry in f.read().split('\n\n'):
+            try: stats.append(json.loads(entry))
+            except: pass
+              
     return jsonify({'data': stats})
 
 # main driver
